@@ -1,33 +1,54 @@
 package com.portfolio.incidencias.controller;
 
-import com.portfolio.incidencias.model.Incidencia;
+import com.portfolio.incidencias.dto.IncidenciaRequestDTO;
+import com.portfolio.incidencias.dto.IncidenciaResponseDTO;
+import com.portfolio.incidencias.dto.IncidenciaUpdateDTO;
 import com.portfolio.incidencias.service.IncidenciaService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-// @RequestMapping define la ruta base para todos los endpoints de este controlador
 @RequestMapping("/api/incidencias")
 @RequiredArgsConstructor
 public class IncidenciaController {
 
-    // El Controller es "tonto", así que le inyectamos el Service para que haga el trabajo real
     private final IncidenciaService incidenciaService;
 
-    /**
-     * Endpoint para obtener el listado de todas las incidencias.
-     * Al devolver ResponseEntity, podemos controlar el código de estado HTTP (200 OK, 404, etc.)
-     */
     @GetMapping
-    public ResponseEntity<List<Incidencia>> listarIncidencias() {
-        List<Incidencia> incidencias = incidenciaService.obtenerTodasLasIncidencias();
-
-        // Devolvemos un HTTP 200 (OK) con la lista de incidencias en el "body" (que se convertirá en JSON)
+    public ResponseEntity<List<IncidenciaResponseDTO>> listarIncidencias() {
+        List<IncidenciaResponseDTO> incidencias = incidenciaService.obtenerTodasLasIncidencias();
         return ResponseEntity.ok(incidencias);
+    }
+
+    /**
+     * Endpoint para obtener una única incidencia por su ID.
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<IncidenciaResponseDTO> obtenerIncidenciaPorId(@PathVariable Long id) {
+        IncidenciaResponseDTO incidencia = incidenciaService.obtenerIncidenciaPorId(id);
+        return ResponseEntity.ok(incidencia);
+    }
+
+    @PostMapping
+    public ResponseEntity<IncidenciaResponseDTO> crearIncidencia(@RequestBody IncidenciaRequestDTO requestDTO) {
+        IncidenciaResponseDTO nuevaIncidencia = incidenciaService.crearIncidencia(requestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevaIncidencia);
+    }
+
+    /**
+     * Endpoint para actualizar una incidencia (Asignar técnico y/o cambiar estado)
+     * @PathVariable coge el {id} de la URL (ej: /api/incidencias/1)
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<IncidenciaResponseDTO> actualizarIncidencia(
+            @PathVariable Long id,
+            @RequestBody IncidenciaUpdateDTO updateDTO) {
+
+        IncidenciaResponseDTO incidenciaActualizada = incidenciaService.actualizarIncidencia(id, updateDTO);
+        return ResponseEntity.ok(incidenciaActualizada);
     }
 }

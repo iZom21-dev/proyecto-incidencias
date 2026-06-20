@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Data // Lombok: Genera getters, setters, toString, equals y hashCode
 @Builder // Lombok: Permite crear objetos con el patrón Builder (muy útil para testing)
@@ -15,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @AllArgsConstructor // Lombok: Constructor con todos los campos (lo usa el Builder)
 @Entity // JPA: Indica que esta clase es una tabla de base de datos
 @Table(name = "usuarios") // JPA: Nombra la tabla explícitamente en plural
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 
 public class Usuario {
 
@@ -30,7 +27,6 @@ public class Usuario {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
